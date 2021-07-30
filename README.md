@@ -7,7 +7,15 @@ The custom configuration install various xrds that can be used to bootstrap clus
 ### Crossplane
 - Ensure Crossplane is installed please follow instructions at [crossplane](https://crossplane.github.io/docs/v1.0/getting-started/install-configure.html)
 
-### Install configuration
+
+## Build and publis
+- Ensure the crossplane cli is installed from https://crossplane.io/docs/v1.3/getting-started/install-configure.html#install-crossplane-cli
+ 
+### Make
+  The provided make file will run the crossplane build and publish command to publish the configuration as an OCI image
+
+
+### Install configuration into a cluster
    Applying the following configuration will install the configuration into your cluster
 
 ```
