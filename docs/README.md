@@ -31,7 +31,7 @@ The custom configuration install various xrds that can be used to bootstrap clus
   ```
 
 # Usage
-  See manifests in bootstrap-examples [examples](examples)
+  See manifests in bootstrap-examples [examples](../examples)
 
 
   
