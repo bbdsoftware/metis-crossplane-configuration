@@ -1,0 +1,9 @@
+apiVersion: pkg.crossplane.io/v1
+kind: Configuration
+metadata:
+  name: platfrom-bootstrap
+spec:
+  package: kanzifucius/metis-crossplane-configuration:master
+  packagePullPolicy: Always
+  revisionActivationPolicy: Automatic
+  revisionHistoryLimit: 1

@@ -1,0 +1,108 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: compositepostgresqlinstances.aws.platform.crossplane.io
+  labels:
+    provider: aws
+spec:
+  writeConnectionSecretsToNamespace: crossplane-system
+  compositeTypeRef:
+    apiVersion: aws.metis.platform.crossplane.io/v1alpha1
+    kind: CompositePostgreSQLInstance
+  resources:
+    - base:
+        apiVersion: database.aws.crossplane.io/v1beta1
+        kind: DBSubnetGroup
+        spec:
+          forProvider:
+            description: Subnet group for eks cluster workload
+            region: eu-west-1
+      patches:
+        - fromFieldPath: "spec.parameters.description"
+          toFieldPath: "spec.forProvider.description"
+          transforms:
+            - type: string
+              string:
+                fmt: "Subnet for - %s"
+          type: FromCompositeFieldPath
+        - fromFieldPath: "spec.parameters.tags"
+          toFieldPath: "spec.forProvider.tags"
+        - fromFieldPath: "spec.parameters.region"
+          toFieldPath: "spec.forProvider.region"
+          type: FromCompositeFieldPath
+    - base:
+        apiVersion: database.aws.crossplane.io/v1beta1
+        kind: RDSInstance
+        spec:
+          forProvider:
+            allocatedStorage: 20
+            backupRetentionPeriod: {{ .Values.rds.backupRetentionPeriod }}
+            dbInstanceClass: db.t2.small
+            dbName: postgres
+            deletionProtection: true
+            enablePerformanceInsights: true
+            engine: postgres
+            engineVersion: "11.8"
+            finalDBSnapshotIdentifier: postgres-final
+            masterUsername: postgres
+            region: {{ .Values.aws.region }}
+            multiAZ: true
+            performanceInsightsRetentionPeriod: 7
+            preferredBackupWindow: 02:30-03:00
+            preferredMaintenanceWindow: Sat:03:15-Sat:03:45
+            publiclyAccessible: false
+            storageEncrypted: true
+            storageType: gp3
+            {{- if .Values.rds.kmsKeyId }}
+            kmsKeyId: {{ .Values.rds.kmsKeyId }}
+            {{- end }}
+            tags:
+              - key: provisionedBy
+                value: Crossplane
+            vpcSecurityGroupIds:
+              {{- range .Values.rds.vpcSecurityGroupIds }}
+              - {{ . }}
+              {{- end}}
+            dbSubnetGroupNameSelector:
+              matchControllerRef: true
+          writeConnectionSecretToRef:
+            namespace: crossplane-system
+          deletionPolicy: Orphan
+      patches:
+        - fromFieldPath: "metadata.uid"
+          toFieldPath: "spec.writeConnectionSecretToRef.name"
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-postgresql"
+          type: FromCompositeFieldPath
+        - fromFieldPath: "spec.parameters.storageGB"
+          toFieldPath: "spec.forProvider.allocatedStorage"
+          type: FromCompositeFieldPath
+        - fromFieldPath: "spec.parameters.dbName"
+          toFieldPath: "spec.forProvider.dbName"
+          type: FromCompositeFieldPath
+        - fromFieldPath: "spec.parameters.dbName"
+          toFieldPath: "spec.forProvider.finalDBSnapshotIdentifier"
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-final"
+          type: FromCompositeFieldPath
+        - fromFieldPath: "spec.parameters.dbInstanceClass"
+          toFieldPath: "spec.forProvider.dbInstanceClass"
+          type: FromCompositeFieldPath
+        - fromFieldPath: "spec.parameters.engineVersion"
+          toFieldPath: "spec.forProvider.engineVersion"
+          type: FromCompositeFieldPath
+        - fromFieldPath: "spec.parameters.kmsKeyId"
+          toFieldPath: "spec.forProvider.kmsKeyId"
+          type: FromCompositeFieldPath
+        - fromFieldPath: "spec.parameters.tags"
+          toFieldPath: "spec.forProvider.tags"
+          type: FromCompositeFieldPath
+      connectionDetails:
+        - fromConnectionSecretKey: username
+        - fromConnectionSecretKey: password
+        - fromConnectionSecretKey: endpoint
+        - fromConnectionSecretKey: port

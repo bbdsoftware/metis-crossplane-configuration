@@ -1,0 +1,67 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: compositepostgresqlinstances.aws.platform.crossplane.io
+spec:
+  claimNames:
+    kind: PostgreSQLInstance
+    plural: postgresqlinstances
+  connectionSecretKeys:
+    - username
+    - password
+    - endpoint
+    - port
+  group: aws.metis.platform.crossplane.io
+  names:
+    kind: CompositePostgreSQLInstance
+    plural: compositepostgresqlinstances
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                parameters:
+                  type: object
+                  properties:
+                    dbInstanceClass:
+                      type: string
+                    dbName:
+                      type: string
+                    region:
+                      type: string
+                    description:
+                      type: string
+                    engineVersion:
+                      type: string
+                    kmsKeyId:
+                      type: string
+                    storageGB:
+                      type: integer
+                    subNetIds:
+                      type: string
+                    tags:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - key
+                          - value
+                        properties:
+                          key:
+                            type: string
+                          value:
+                            type: string
+                  required:
+                    - storageGB
+                    - description
+                    - dbName
+                    - tags
+                    - subNetIds
+              required:
+                - parameters
