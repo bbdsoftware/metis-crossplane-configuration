@@ -36,7 +36,7 @@ spec:
         spec:
           forProvider:
             allocatedStorage: 20
-            backupRetentionPeriod: {{ .Values.rds.backupRetentionPeriod }}
+            backupRetentionPeriod: 30
             dbInstanceClass: db.t2.small
             dbName: postgres
             deletionProtection: true
@@ -45,7 +45,7 @@ spec:
             engineVersion: "11.8"
             finalDBSnapshotIdentifier: postgres-final
             masterUsername: postgres
-            region: {{ .Values.aws.region }}
+            region: eu-west-1
             multiAZ: true
             performanceInsightsRetentionPeriod: 7
             preferredBackupWindow: 02:30-03:00
@@ -53,16 +53,13 @@ spec:
             publiclyAccessible: false
             storageEncrypted: true
             storageType: gp3
-            {{- if .Values.rds.kmsKeyId }}
-            kmsKeyId: {{ .Values.rds.kmsKeyId }}
-            {{- end }}
             tags:
               - key: provisionedBy
                 value: Crossplane
-            vpcSecurityGroupIds:
-              {{- range .Values.rds.vpcSecurityGroupIds }}
-              - {{ . }}
-              {{- end}}
+#            vpcSecurityGroupIds:
+#              {{- range .Values.rds.vpcSecurityGroupIds }}
+#              - {{ . }}
+#              {{- end}}
             dbSubnetGroupNameSelector:
               matchControllerRef: true
           writeConnectionSecretToRef:
