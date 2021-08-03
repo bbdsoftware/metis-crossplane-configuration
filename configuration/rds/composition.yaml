@@ -1,7 +1,7 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: compositepostgresqlinstances.aws.platform.crossplane.io
+  name: compositepostgresqlinstances.aws.metis.platform.crossplane.io
   labels:
     provider: aws
 spec:
