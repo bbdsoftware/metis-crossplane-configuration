@@ -27,4 +27,4 @@ jobs:
       - name: Push
         uses: crossplane-contrib/xpkg-action@v0.2.0
         with:
-           command: push configuration -f configuration/metis-crossplanecong.xpkg:latest
+           command: push configuration -f configuration/metis-crossplanecong.xpkg  kanzifucius/metis-crossplane-configuration:master
