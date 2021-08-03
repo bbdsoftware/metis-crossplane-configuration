@@ -5,14 +5,21 @@ metadata:
   namespace: default
 spec:
   parameters:
-    dbInstanceClass: t2.small
+    dbInstanceClass: db.t2.small
     dbName: testingdb
     description: " this is a test db"
 #    engineVersion:
 #    kmsKeyId	<string>
     region: eu-west-1
     storageGB: 20
-    subNetIds: subnet-032395aa28fc5c08d
+    vpcSecurityGroupIds:
+      - sg-0b5643a0d04adca72
+    subnetIds:
+      - subnet-07eeeebbdec57cb3c
+      - subnet-03b97dca50ca1d4a8
+      - subnet-05be491c8a141bb8e
     tags:
      - key: tests
        value: test
+  writeConnectionSecretToRef:
+      name: example-mysqlinstance

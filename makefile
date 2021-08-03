@@ -1,2 +1,2 @@
 all:
-	$(MAKE) -C bootstrap-configuration build
+	$(MAKE) -C configuration build

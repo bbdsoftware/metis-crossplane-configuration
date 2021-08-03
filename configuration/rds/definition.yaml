@@ -43,8 +43,14 @@ spec:
                       type: string
                     storageGB:
                       type: integer
-                    subNetIds:
-                      type: string
+                    subnetIds:
+                      type: array
+                      items:
+                        type: string
+                    vpcSecurityGroupIds:
+                      type: array
+                      items:
+                        type: string
                     tags:
                       type: array
                       items:
@@ -62,5 +68,7 @@ spec:
                     - description
                     - dbName
                     - tags
+                    - vpcSecurityGroupIds
+                    - subnetIds
               required:
                 - parameters
