@@ -23,7 +23,7 @@ jobs:
         with:
             channel: master
             version: current
-            command: build configuration -f configuration/crossplane.yaml --name=metis-crossplanecong.xpkg
+            command: build configuration -f configuration --name=metis-crossplanecong.xpkg
       - name: Push
         uses: crossplane-contrib/xpkg-action@v0.2.0
         with:
