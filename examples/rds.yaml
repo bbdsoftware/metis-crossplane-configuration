@@ -1,0 +1,18 @@
+apiVersion: aws.metis.platform.crossplane.io/v1alpha1
+kind: PostgreSQLInstance
+metadata:
+  name: testrds-metiis
+  namespace: default
+spec:
+  parameters:
+    dbInstanceClass: t2.small
+    dbName: testingdb
+    description: " this is a test db"
+#    engineVersion:
+#    kmsKeyId	<string>
+    region: eu-west-1
+    storageGB: 20
+    subNetIds: subnet-032395aa28fc5c08d
+    tags:
+     - key: tests
+       value: test
