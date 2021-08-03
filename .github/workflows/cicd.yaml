@@ -13,10 +13,9 @@ jobs:
 #      - name: Set tag
 #        run: echo "::set-output name=VERSION_TAG::$(git describe --dirty --always --tags | sed 's/-/./2' | sed 's/-/./2' )"
 #        id: tagger
-      - name: Login to Docker
+      - name:  Login to Docker Hub
         uses: docker/login-action@v1
         with:
-            registry: kanzifucius/metis-crossplane-configuration
             username: ${{ secrets.DOCKERHUB_USER }}
             password: ${{ secrets.DOCKERHUB_USER_PSW }}
       - name: Build
