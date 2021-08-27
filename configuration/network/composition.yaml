@@ -1,0 +1,200 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: compositenetworks.aws.metis.platform.crossplane.io
+  labels:
+    provider: aws
+spec:
+  writeConnectionSecretsToNamespace: crossplane-system
+  compositeTypeRef:
+    apiVersion: aws.metis.platform.crossplane.io/v1alpha1
+    kind: CompositeNetwork
+  resources:
+    - base:
+        apiVersion: ec2.aws.crossplane.io/v1beta1
+        kind: VPC
+        spec:
+          forProvider:
+            region: eu-west-1
+            cidrBlock: 192.168.0.0/16
+            enableDnsSupport: true
+            enableDnsHostNames: true
+          providerConfigRef:
+            name: default
+      patches:
+        - fromFieldPath: spec.id
+          toFieldPath: metadata.labels[networks.aws.metis.platform.crossplane.io/network-id]
+        - fromFieldPath: spec.providerConfigRef
+          toFieldPath: spec.providerConfigRef.name
+          policy:
+              fromFieldPath: Required
+    - base:
+        apiVersion: ec2.aws.crossplane.io/v1beta1
+        kind: InternetGateway
+        spec:
+          forProvider:
+            region: eu-west-1
+            vpcIdSelector:
+              matchControllerRef: true
+          providerConfigRef:
+            name: default
+      patches:
+        - fromFieldPath: spec.id
+          toFieldPath: metadata.labels[networks.aws.metis.platform.crossplane.io/network-id]
+        - fromFieldPath: spec.providerConfigRef
+          toFieldPath: spec.providerConfigRef.name
+          policy:
+              fromFieldPath: Required
+    - base:
+        apiVersion: ec2.aws.crossplane.io/v1beta1
+        kind: Subnet
+        metadata:
+          labels:
+            zone: eu-west-1a
+            access: public
+        spec:
+          forProvider:
+            region: eu-west-1
+            mapPublicIPOnLaunch: true
+            cidrBlock: 192.168.0.0/18
+            vpcIdSelector:
+              matchControllerRef: true
+            availabilityZone: eu-west-1a
+            tags:
+              - key: kubernetes.io/role/elb
+                value: "1"
+          providerConfigRef:
+            name : default
+      patches:
+        - fromFieldPath: spec.id
+          toFieldPath: metadata.labels[networks.aws.metis.platform.crossplane.io/network-id]
+        - fromFieldPath: spec.providerConfigRef
+          toFieldPath: spec.providerConfigRef.name
+          policy:
+              fromFieldPath: Required
+    - base:
+        apiVersion: ec2.aws.crossplane.io/v1beta1
+        kind: Subnet
+        metadata:
+          labels:
+            zone: eu-west-1b
+            access: public
+        spec:
+          forProvider:
+            region: eu-west-1
+            mapPublicIPOnLaunch: true
+            cidrBlock: 192.168.64.0/18
+            vpcIdSelector:
+              matchControllerRef: true
+            availabilityZone: eu-west-1b
+            tags:
+              - key: kubernetes.io/role/elb
+                value: "1"
+          providerConfigRef:
+            name: default
+      patches:
+        - fromFieldPath: spec.id
+          toFieldPath: metadata.labels[networks.aws.metis.platform.crossplane.io/network-id]
+        - fromFieldPath: spec.providerConfigRef
+          toFieldPath: spec.providerConfigRef.name
+          policy:
+            fromFieldPath: Required
+    - base:
+        apiVersion: ec2.aws.crossplane.io/v1beta1
+        kind: Subnet
+        metadata:
+          labels:
+            zone: eu-west-1a
+            access: private
+        spec:
+          providerConfigRef:
+            name: default
+          forProvider:
+            region: eu-west-1
+            cidrBlock: 192.168.128.0/18
+            vpcIdSelector:
+              matchControllerRef: true
+            availabilityZone: eu-west-1a
+            tags:
+              - value: shared
+                key: ""
+              - key: kubernetes.io/role/internal-elb
+                value: "1"
+      patches:
+        - fromFieldPath: spec.id
+          toFieldPath: metadata.labels[networks.aws.metis.platform.crossplane.io/network-id]
+        - fromFieldPath: spec.clusterRef.id
+          toFieldPath: spec.forProvider.tags[0].key
+          transforms:
+            - type: string
+              string:
+                fmt: "kubernetes.io/cluster/%s"
+    - base:
+
+        apiVersion: ec2.aws.crossplane.io/v1beta1
+        kind: Subnet
+        metadata:
+          labels:
+            zone: eu-west-1b
+            access: private
+        spec:
+          providerConfigRef:
+            name: default
+          forProvider:
+            region: eu-west-1
+            cidrBlock: 192.168.192.0/18
+            vpcIdSelector:
+              matchControllerRef: true
+            availabilityZone: eu-west-1b
+            tags:
+              - value: shared
+                key: ""
+              - key: kubernetes.io/role/internal-elb
+                value: "1"
+      patches:
+        - fromFieldPath: spec.id
+          toFieldPath: metadata.labels[networks.aws.metis.platform.crossplane.io/network-id]
+        - fromFieldPath: spec.clusterRef.id
+          toFieldPath: spec.forProvider.tags[0].key
+          transforms:
+            - type: string
+              string:
+                fmt: "kubernetes.io/cluster/%s"
+    - base:
+        apiVersion: ec2.aws.crossplane.io/v1alpha4
+        kind: RouteTable
+        spec:
+          providerConfigRef:
+            name: default
+          forProvider:
+            region: eu-west-1
+            vpcIdSelector:
+              matchControllerRef: true
+            routes:
+              - destinationCidrBlock: 0.0.0.0/0
+                gatewayIdSelector:
+                  matchControllerRef: true
+            associations:
+              - subnetIdSelector:
+                  matchControllerRef: true
+                  matchLabels:
+                    zone: eu-west-1a
+                    access: public
+              - subnetIdSelector:
+                  matchControllerRef: true
+                  matchLabels:
+                    zone: eu-west-1b
+                    access: public
+              - subnetIdSelector:
+                  matchControllerRef: true
+                  matchLabels:
+                    zone: eu-west-1a
+                    access: private
+              - subnetIdSelector:
+                  matchControllerRef: true
+                  matchLabels:
+                    zone: eu-west-1b
+                    access: private
+      patches:
+        - fromFieldPath: spec.id
+          toFieldPath: metadata.labels[networks.aws.metis.platform.crossplane.io/network-id]

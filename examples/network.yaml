@@ -1,0 +1,9 @@
+apiVersion: aws.metis.platform.crossplane.io/v1alpha1
+kind: Network
+metadata:
+  name: network
+spec:
+  id: metis-aws-network
+  providerConfigRef: aws-provider
+  clusterRef:
+    id: metis-aws-cluster

@@ -1,0 +1,23 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: bootstraps.gitops.metis.platform.crossplane.io
+spec:
+  group: gitops.metis.platform.crossplane.io
+  names:
+    kind: Bootstrap
+    plural: bootstraps
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              name:
+                type: string
+                description: "git tag  branch  commit"

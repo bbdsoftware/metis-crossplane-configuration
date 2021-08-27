@@ -1,0 +1,45 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: appsetmodules.gitops.metis.platform.crossplane.io
+spec:
+  group: gitops.metis.platform.crossplane.io
+  names:
+    kind: AppSetModule
+    plural: appsetmodules
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              revision:
+                type: string
+                description: "git tag  branch  commit"
+              path:
+                type: string
+                description: "git path"
+              repoURL:
+                type: string
+                description: "git repo"
+              aws:
+                type: object
+                properties:
+                  enabled:
+                    type: string
+                    description: "enable aws profile"
+                  iamServiceAccounts:
+                    description: "enable aws profile"
+                    type: object
+                    properties:
+                      enabled:
+                        type: string
+                        description: "use IAM service accounts"
+                      iamRoleArn:
+                        type: string
+                        description: iamRoleArn

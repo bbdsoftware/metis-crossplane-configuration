@@ -1,0 +1,136 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name:  module.gitops.metis.platform.crossplane.io
+  labels:
+    provider: kubernetes
+spec:
+  writeConnectionSecretsToNamespace: crossplane-system
+  compositeTypeRef:
+    apiVersion: gitops.metis.platform.crossplane.io/v1alpha1
+    kind: AppSetModule
+  resources:
+    - base:
+        apiVersion: kubernetes.crossplane.io/v1alpha1
+        kind: Object
+        spec:
+          forProvider:
+            manifest:
+              apiVersion: argoproj.io/v1alpha1
+              kind: AppProject
+              metadata:
+                name: metis-bootstrap
+                namespace: argocd
+                annotations:
+                  argocd.argoproj.io/sync-wave: "-1"
+                finalizers:
+                  - resources-finalizer.argocd.argoproj.io
+              spec:
+                description: metis-bootstrap
+                # Allow manifests to deploy from any Git repos
+                destinations:
+                  - namespace: '*'
+                    server: '*'
+                namespaceResourceWhitelist:
+                  - group: '*'
+                    kind: '*'
+                clusterResourceWhitelist:
+                  - group: '*'
+
+                    kind: '*'
+                sourceRepos:
+                  - '*'
+    - base:
+        apiVersion: kubernetes.crossplane.io/v1alpha1
+        kind: Object
+        spec:
+            forProvider:
+              manifest:
+                apiVersion: argoproj.io/v1alpha1
+                kind: ApplicationSet
+                metadata:
+                  name: metis-apps-test
+                  namespace: argocd
+                spec:
+                  generators:
+                    - matrix:
+                        generators:
+                          # git generator, 'child' #1
+                          - clusters: { }
+                          - git:
+                              repoURL: https://github.com/bbdsoftware/metis-cluster-bootstraps.git
+                              revision: main
+                              directories:
+                                - path: charts-modules/*
+                  template:
+                    # This is a template Argo CD Application, but with support for parameter substitution.
+                    metadata:
+                      name: '{{path.basename}}-{{name}}'
+                      annotations:
+                        argocd.argoproj.io/sync-wave: "3"
+                    spec:
+                      syncPolicy:
+                        automated: # automated sync by default retries failed attempts 5 times with following delays between attempts ( 5s, 10s, 20s, 40s, 80s ); retry controlled using `retry` field.
+                          prune: true # Specifies if resources should be pruned during auto-syncing ( false by default ).
+                          selfHeal: true # Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).
+                          allowEmpty: false # Allows deleting all application resources during automatic syncing ( false by default ).
+                        syncOptions: # Sync options which modifies sync behavior
+                          - Validate=false # disables resource validation (equivalent to 'kubectl apply --validate=false') ( true by default ).
+                          - CreateNamespace=false # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
+                          - PrunePropagationPolicy=foreground # Supported policies are background, foreground and orphan.
+                          - PruneLast=true # Allow the ability for resource pruning to happen as a final, implicit wave of a sync operation
+                          - ApplyOutOfSyncOnly=true
+                        retry:
+                          limit: 15 # number of failed sync attempt retries; unlimited number of attempts if less than 0
+                          backoff:
+                            duration: 5s # the amount to back off. Default unit is seconds, but could also be a duration (e.g. "2m", "1h")
+                            factor: 2 # a factor to multiply the base duration after each failed retry
+                            maxDuration: 3m # the maximum amount of time allowed for the backoff strategy
+                      project: metis-bootstrap
+                      source:
+                        repoURL: https://github.com/bbdsoftware/metis-cluster-bootstraps.git
+                        targetRevision: main
+                        path: '{{path}}'
+                        helm:
+                          parameters:
+                            - name: "spec.destination.clustername"
+                              value: "{{name}}"
+                              forceString: true # ensures that value is treated as a stri
+                            - name: "spec.aws.enabled"
+                              value: "true"
+                              forceString: true # ensures that value is treated as a stri
+                            - name: "spec.aws.iamServiceAccounts.enabled"
+                              value: "true"
+                              forceString: true # ensures that value is treated as a stri
+                            - name: "spec.aws.iamServiceAccounts.iamRoleArn"
+                              value: "NONE"
+                              forceString: true # ensures that value is treated as a stri
+                            - name: "spec.destination.revision"
+                              value: "main"
+                              forceString: true # ensures that value is treated as a stri
+                      destination:
+                        server: '{{server}}'
+                        namespace: '{{path.basename}}'
+      patches:
+        - fromFieldPath: spec.aws.enabled
+          toFieldPath: "spec.forProvider.manifest.spec.template.spec.source.helm.parameters[1].value"
+        - fromFieldPath: spec.aws.enabled
+          toFieldPath: "spec.forProvider.manifest.spec.template.spec.source.helm.parameters[1].value"
+        - fromFieldPath: spec.aws.iamServiceAccounts.enabled
+          toFieldPath: "spec.forProvider.manifest.spec.template.spec.source.helm.parameters[2].value"
+        - fromFieldPath: spec.aws.iamServiceAccounts.iamRoleArn
+          toFieldPath: "spec.forProvider.manifest.spec.template.spec.source.helm.parameters[3].value"
+        - fromFieldPath: "spec.revision"
+          toFieldPath: "spec.forProvider.manifest.spec.template.spec.source.helm.parameters[4].value"
+        - fromFieldPath: "spec.revision"
+          toFieldPath: "spec.forProvider.manifest.spec.template.spec.source.targetRevision"
+        - fromFieldPath: "spec.path"
+          toFieldPath: "spec.forProvider.manifest.spec.template.spec.source.path"
+        - fromFieldPath: "spec.repoURL"
+          toFieldPath: "spec.forProvider.manifest.spec.template.spec.source.repoURL"
+        - fromFieldPath: "spec.repoURL"
+          toFieldPath: "spec.forProvider.manifest.spec.generators[0].git.repoURL"
+        - fromFieldPath: "spec.revision"
+          toFieldPath: "spec.forProvider.manifest.spec.generators[0].git.revision"
+        - fromFieldPath: "spec.path"
+          toFieldPath: "spec.forProvider.manifest.spec.generators[0].git.directories[0].path"

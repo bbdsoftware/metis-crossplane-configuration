@@ -1,0 +1,33 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name:  bootstrap.gitops.metis.platform.crossplane.io
+  labels:
+    provider: kubernetes
+spec:
+  writeConnectionSecretsToNamespace: crossplane-system
+  compositeTypeRef:
+    apiVersion: gitops.metis.platform.crossplane.io/v1alpha1
+    kind: Bootstrap
+  resources:
+    - base:
+        apiVersion: gitops.metis.platform.crossplane.io/v1alpha1
+        kind: ArgoCD
+        metadata:
+          name: argocd-metis
+        spec:
+          id: argocd-metis
+    - base:
+        apiVersion: gitops.metis.platform.crossplane.io/v1alpha1
+        kind: AppSetModule
+        metadata:
+          name: apset-logging
+        spec:
+          revision: main
+          path: charts-modules
+          repoURL: https://github.com/bbdsoftware/metis-cluster-bootstraps.git
+          aws:
+            enabled: "true"
+            iamServiceAccounts:
+              enabled: "true"
+              iamRoleArn: NOTPROVIDED

@@ -1,0 +1,74 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name:  gitops.metis.platform.crossplane.io
+  labels:
+    provider: helm
+spec:
+  writeConnectionSecretsToNamespace: crossplane-system
+  compositeTypeRef:
+    apiVersion: gitops.metis.platform.crossplane.io/v1alpha1
+    kind: ArgoCD
+  resources:
+    - base:
+        apiVersion: helm.crossplane.io/v1beta1
+        kind: Release
+        metadata:
+          annotations:
+            crossplane.io/external-name: argocd
+        spec:
+          forProvider:
+            chart:
+              name: argo-cd
+              repository: https://argoproj.github.io/argo-helm
+              version:  3.15.0
+            namespace: argocd
+            values:
+              controller:
+                 enableStatefulSet : true
+              repoServer:
+                autoscaling:
+                  enabled: true
+    - base:
+        apiVersion: helm.crossplane.io/v1beta1
+        kind: Release
+        metadata:
+          annotations:
+            crossplane.io/external-name: argocd-applicationset
+        spec:
+          forProvider:
+            chart:
+              name: argocd-applicationset
+              repository: https://argoproj.github.io/argo-helm
+              version: 1.3.1
+            namespace: argocd
+            values:
+              replicaCount: 2
+
+#              persistence:
+#                enabled: false
+#              mariadb:
+#                enabled: false
+#              externalDatabase:
+#                create: true
+#                database: wordpress
+#                port: 3306
+#            set:
+#              - name: externalDatabase.host
+#                valueFrom:
+#                  secretKeyRef:
+#                    name:
+#                    namespace: crossplane-system
+#                    key: endpoint
+#              - name: externalDatabase.user
+#                valueFrom:
+#                  secretKeyRef:
+#                    name:
+#                    namespace: crossplane-system
+#                    key: username
+#              - name: externalDatabase.password
+#                valueFrom:
+#                  secretKeyRef:
+#                    name:
+#                    namespace: crossplane-system
+#                    key: password

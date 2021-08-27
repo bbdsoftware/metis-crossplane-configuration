@@ -1,0 +1,13 @@
+apiVersion: gitops.metis.platform.crossplane.io/v1alpha1
+kind: AppSetModule
+metadata:
+  name: apset-logging
+spec:
+  revision: main
+  path: charts-modules/metis-apps-logging
+  repoURL: https://github.com/bbdsoftware/metis-cluster-bootstraps.git
+  aws:
+    enabled: "true"
+    iamServiceAccounts:
+      enabled: "true"
+      iamRoleArn: NOTPROVIDED

@@ -11,7 +11,7 @@ spec:
 #    engineVersion:
 #    kmsKeyId	<string>
     region: eu-west-1
-    storageGB: 20
+    storageGB: 50
     vpcSecurityGroupIds:
       - sg-0b5643a0d04adca72
     subnetIds:

@@ -1,0 +1,6 @@
+apiVersion: gitops.metis.platform.crossplane.io/v1alpha1
+kind: ArgoCD
+metadata:
+  name: argocd-metis
+spec:
+  id: argocd-metis
