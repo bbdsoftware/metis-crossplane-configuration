@@ -24,7 +24,7 @@ spec:
           name: apset-logging
         spec:
           revision: main
-          path: charts-modules
+          path: charts-modules/*
           repoURL: https://github.com/bbdsoftware/metis-cluster-bootstraps.git
           aws:
             enabled: "true"
