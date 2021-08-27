@@ -1,9 +1,9 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: argocds.gitops.metis.platform.crossplane.io
+  name: argocds.tools.metis.platform.crossplane.io
 spec:
-  group: gitops.metis.platform.crossplane.io
+  group: tools.metis.platform.crossplane.io
   names:
     kind: ArgoCD
     plural: argocds

@@ -13,6 +13,8 @@ spec:
     - base:
         apiVersion: kubernetes.crossplane.io/v1alpha1
         kind: Object
+        metadata:
+          name: appproject-metis-bootstrap
         spec:
           forProvider:
             manifest:
@@ -43,13 +45,15 @@ spec:
     - base:
         apiVersion: kubernetes.crossplane.io/v1alpha1
         kind: Object
+        metadata:
+          name: applicationset-metis-bootstrap
         spec:
             forProvider:
               manifest:
                 apiVersion: argoproj.io/v1alpha1
                 kind: ApplicationSet
                 metadata:
-                  name: metis-apps-test
+                  name: metis-apps
                   namespace: argocd
                 spec:
                   generators:
@@ -124,8 +128,6 @@ spec:
           toFieldPath: "spec.forProvider.manifest.spec.template.spec.source.helm.parameters[4].value"
         - fromFieldPath: "spec.revision"
           toFieldPath: "spec.forProvider.manifest.spec.template.spec.source.targetRevision"
-        - fromFieldPath: "spec.path"
-          toFieldPath: "spec.forProvider.manifest.spec.template.spec.source.path"
         - fromFieldPath: "spec.repoURL"
           toFieldPath: "spec.forProvider.manifest.spec.template.spec.source.repoURL"
         - fromFieldPath: "spec.repoURL"

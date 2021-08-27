@@ -11,7 +11,7 @@ spec:
     kind: Bootstrap
   resources:
     - base:
-        apiVersion: gitops.metis.platform.crossplane.io/v1alpha1
+        apiVersion: tools.metis.platform.crossplane.io/v1alpha1
         kind: ArgoCD
         metadata:
           name: argocd-metis
