@@ -17,6 +17,9 @@ spec:
           name: argocd-metis
         spec:
           id: argocd-metis
+      patches:        # All Helm releases derive the ProviderConfig to use from the XR.
+        - fromFieldPath: spec.providerHelmConfigRef.name
+          toFieldPath: spec.providerHelmConfigRef.name
     - base:
         apiVersion: gitops.metis.platform.crossplane.io/v1alpha1
         kind: AppSetModule
@@ -29,5 +32,8 @@ spec:
           aws:
             enabled: "true"
             iamServiceAccounts:
-              enabled: "true"
+              enab  led: "true"
               iamRoleArn: NOTPROVIDED
+      patches:        # All Helm releases derive the ProviderConfig to use from the XR.
+        - fromFieldPath: spec.providerKubernetesConfigRef.name
+          toFieldPath: spec.providerKubernetesConfigRef.name

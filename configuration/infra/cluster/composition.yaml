@@ -189,13 +189,3 @@ spec:
                 fmt: "%s-ekscluster"
       readinessChecks:
         - type: None
-    - base:
-        apiVersion: gitops.metis.platform.crossplane.io/v1alpha1
-        kind: Bootstrap
-        metadata:
-          name: test
-        spec:
-          name: test
-      patches:
-      readinessChecks:
-        - type: None

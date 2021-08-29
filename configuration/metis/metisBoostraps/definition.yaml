@@ -21,3 +21,31 @@ spec:
               name:
                 type: string
                 description: "git tag  branch  commit"
+              providerHelmConfigRef:
+                type: object
+                description: "A reference to the helm ProviderConfig of the cluster that services should
+                            be deployed to."
+                properties:
+                  name:
+                    type: string
+                    description: "Name of the Kubernetes provider configuration.
+                                  This will typically be the name of the cluster with a
+                                  five character suffix appended."
+                required:
+                  - name
+              providerKubernetesConfigRef:
+                type: object
+                description: "A reference to the kubernetes ProviderConfig of the cluster that services should
+                                          be deployed to."
+                properties:
+                  name:
+                    type: string
+                    description: "Name of the Kubernetes provider configuration.
+                                                This will typically be the name of the cluster with a
+                                                five character suffix appended."
+                required:
+                  - name
+              required:
+                - providerHelmConfigRef
+                - providerKubernetesConfigRef
+                - name

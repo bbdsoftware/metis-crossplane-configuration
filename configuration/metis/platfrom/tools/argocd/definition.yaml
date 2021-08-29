@@ -1,0 +1,38 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: argocds.tools.metis.platform.crossplane.io
+spec:
+  group: tools.metis.platform.crossplane.io
+  names:
+    kind: ArgoCD
+    plural: argocds
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Name of the argo rleaset.
+            providerHelmConfigRef:
+              type: object
+              description: "A reference to the ProviderConfig of the cluster that services should
+                                        be deployed to."
+              properties:
+                name:
+                  type: string
+                  description: "Name of the Kubernetes provider configuration.
+                                              This will typically be the name of the cluster with a
+                                              five character suffix appended."
+              required:
+                - name
+          required:
+              - providerHelmConfigRef
+              - name

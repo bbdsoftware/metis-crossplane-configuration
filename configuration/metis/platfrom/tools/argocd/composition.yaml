@@ -1,7 +1,7 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name:  gitops.metis.platform.crossplane.io
+  name:  tools.metis.platform.crossplane.io
   labels:
     provider: helm
 spec:
@@ -29,6 +29,10 @@ spec:
               repoServer:
                 autoscaling:
                   enabled: true
+      patches:
+        # All Helm releases derive the ProviderConfig to use from the XR.
+        - fromFieldPath: spec.providerHelmConfigRef.name
+          toFieldPath: spec.providerConfigRef.name
     - base:
         apiVersion: helm.crossplane.io/v1beta1
         kind: Release
@@ -44,6 +48,11 @@ spec:
             namespace: argocd
             values:
               replicaCount: 2
+      patches:
+        # All Helm releases derive the ProviderConfig to use from the XR.
+        - fromFieldPath: spec.providerHelmConfigRef.name
+          toFieldPath: spec.providerConfigRef.name
+
 
 #              persistence:
 #                enabled: false
