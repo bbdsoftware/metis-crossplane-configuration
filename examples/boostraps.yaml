@@ -4,3 +4,7 @@ metadata:
   name: test
 spec:
   name: test
+  providerKubernetesConfigRef:
+    name: new-0mosthere
+  providerHelmConfigRef:
+    name: default

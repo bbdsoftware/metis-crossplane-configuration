@@ -43,17 +43,20 @@ spec:
                       iamRoleArn:
                         type: string
                         description: iamRoleArn
-          providerKubernetesConfigRef:
-            type: object
-            description: "A reference to the ProviderConfig of the cluster that services should
-                        be deployed to."
-            properties:
-              name:
-                type: string
-                description: "Name of the Kubernetes provider configuration.
-                              This will typically be the name of the cluster with a
-                              five character suffix appended."
+              providerKubernetesConfigRef:
+                type: object
+                description: "A reference to the ProviderConfig of the cluster that services should
+                            be deployed to."
+                properties:
+                  name:
+                    type: string
+                    description: "Name of the Kubernetes provider configuration.
+                                  This will typically be the name of the cluster with a
+                                  five character suffix appended."
+                required:
+                  - name
             required:
-              - name
-          required:
-            - providerKubernetesConfigRef
+              - providerKubernetesConfigRef
+              - path
+              - repoURL
+              - revision

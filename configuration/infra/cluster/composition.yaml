@@ -176,6 +176,15 @@ spec:
             secretRef:
               namespace: crossplane-system
               key: kubeconfig
+    - base:
+        apiVersion: metis-boosots
+        kind: Boots
+        spec:
+          credentials:
+            source: Secret
+            secretRef:
+              namespace: crossplane-system
+              key: kubeconfig
       patches:
         - fromFieldPath: spec.id
           toFieldPath: metadata.name

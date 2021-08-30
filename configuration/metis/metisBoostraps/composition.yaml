@@ -16,7 +16,7 @@ spec:
         metadata:
           name: argocd-metis
         spec:
-          id: argocd-metis
+          name: argocd-metis
       patches:        # All Helm releases derive the ProviderConfig to use from the XR.
         - fromFieldPath: spec.providerHelmConfigRef.name
           toFieldPath: spec.providerHelmConfigRef.name

@@ -45,7 +45,7 @@ spec:
                                                 five character suffix appended."
                 required:
                   - name
-              required:
+            required:
                 - providerHelmConfigRef
                 - providerKubernetesConfigRef
                 - name
