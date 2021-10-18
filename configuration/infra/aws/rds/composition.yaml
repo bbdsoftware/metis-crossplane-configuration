@@ -68,7 +68,7 @@ spec:
               matchControllerRef: true
           writeConnectionSecretToRef:
             namespace: kube-addons-crossplane
-          deletionPolicy: delete
+          deletionPolicy: Delete
       patches:
         - fromFieldPath: "metadata.uid"
           toFieldPath: "spec.writeConnectionSecretToRef.name"
